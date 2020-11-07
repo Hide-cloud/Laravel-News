@@ -1,0 +1,35 @@
+body{
+    margin-left: 200px;
+    margin-right: 200px;
+}
+
+.topTitle{
+    font-size: 23px;
+    background-color: rgba(0, 255, 0, 0.3);
+    font-family: italic;
+}
+
+.sentence{
+    font-weight: bold;
+    font-size: 25px;
+    margin-left: 10px;
+}
+
+.titleInput{
+    margin-bottom: 10px;
+}
+
+.articleInput{
+    padding-left: 30px;
+}
+
+.articleInput textarea{
+    vertical-align: top;
+    margin-bottom: 10px;
+}
+
+#submitButton{
+    border-radius: 20px;
+    color: white;
+    background-color: orange;
+}
