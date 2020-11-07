@@ -19,6 +19,7 @@
   
 
  if($_SERVER['REQUEST_METHOD']==='POST'){
+   //タイトル、記事が入力されていたら
      if(!empty($_POST['title']&& !empty($_POST['article']))){
         
       //タイトルと記事のデータを取得
@@ -76,6 +77,7 @@
               <p style="border-top:solid 1px black"><p>
               <p　style="font-weight:bolder"><?php echo h($data[0]); ?></p>
               <p><?php echo h($data[1]); ?></p>
+              <!--リンク先のURLを繰り返し処理の中で変える方法を検討中-->
               <a href="">記事全文・コメントを見る</a>
             </div>
           <?php } ?>
