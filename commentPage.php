@@ -1,8 +1,6 @@
 <?php
 //コメントを追加
 $comment="";
-//$deleteComment="";
-$deleteComment=$_GET['pushedComment'];
 $commentId="";
 $commentData=[];
 $commentArray=[];
@@ -11,7 +9,8 @@ $postComment='comment.txt';
  $postFile='keiziban.txt';
  $postArray=[];
  $arrayData=[];
- $id=uniqid();
+ $uniqueId=uniqid();
+ //$commentId=$_GET[$id];
  $postID=$_GET[$id];
  //ページのURLを取得(id=~~~~~の部分)
  $url= htmlspecialchars($_SERVER['QUERY_STRING']);
@@ -32,37 +31,57 @@ $postComment='comment.txt';
     
     //取り出したURL(id=~~~~)の３文字目から１３文字取り出したものを$commentIdとする
     $commentId=substr($url,3,13);
+    //$commentId=$postID;
 
     //コメントが入力されていたら
       if(!empty($_POST['comment'])){
-         
+
        //コメントのデータを取得
          $comment=$_POST['comment'];
 
        //コメントIDとコメントのデータを$commentData配列に代入 
-         $commentData=[$commentId,$comment];
+         $commentData=[$uniqueId,$commentId,$comment];
  
        //コメントのデータを$commentArray配列に代入
          $commentArray[]=$commentData;
 
        //入力されたデータ($commentArray)をテキストファイル($postComment)に書き込む
          file_put_contents($postComment,json_encode($commentArray));
-      }
+      
+       //header()で指定したページにリダイレクト
+        //今回は今と同じ場所にリダイレクト（つまりWebページを更新）
+          header('Location: ' . $_SERVER['REQUEST_URI']);
+        //プログラム終了
+          exit;
 
-     if(empty($_POST['comment'])){
-      $commentErrorMesseage="・コメントは必須です。";
+      //コメントを消すボタンが押された時
+      }else if(isset($_POST['del'])){
+        //変数定義
+        $postDeleteComment=$_POST['del'];
+        //テキストファイルを上書きするために新しい配列を作成
+        $New_Comment_Array=[];
+        //元の配列$commentArrayを新しい配列$New_Comment_Arrayに入れ直す
+        foreach($commentArray as $value){
+          //コメント消すボタンを押して送られてきた値$postDeleteCommentが配列内の$postIDと同じじゃないものを新しい配列$New_Comment_Arrayに代入する
+            if($value[0] !== $postDeleteComment){
+             $New_Comment_Array[]=$value;
+            }
+        }
+
+        //入力されたデータ(新しい配列$New_Comment_Array)をテキストファイル($postComment)に書き込み直す
+        file_put_contents($postComment,json_encode($New_Comment_Array));
+        
+        //header()で指定したページにリダイレクト
+        //今回は今と同じ場所にリダイレクト（つまりWebページを更新）
+           header('Location: ' . $_SERVER['REQUEST_URI']);
+        //プログラム終了
+           exit;
+
+      }else if(empty($_POST['comment'])){
+         $commentErrorMesseage="・コメントは必須です。";
      }
   }
   
-  
-  
-
-  
-  
-
-　
-
-
 ?>
 
 
@@ -102,7 +121,7 @@ $postComment='comment.txt';
     <section class="commentArea">
      <div class="form-comment">
       
-        <form method="POST" action="">
+        <form method="POST" >
          <div class="pushCommentArea">
            <textarea class="commentInput" name="comment" cols="26" rows="9" value=""></textarea>
            <input class="commentPushBotton" type="submit" value="コメントを書く"> 
@@ -115,17 +134,19 @@ $postComment='comment.txt';
        //$commentArray配列からデータ(コメントIDとコメント)を取り出す
           foreach($commentArray as $array){ 
 
-            //$array[1](記事)と$deleteCommentが同じ場合に配列$arrayから$deleteCommentを削除する
-            if(strpos($array[1],$deleteComment)){
-              array_splice($array,$deleteComment);
-             }
+            ////$array[1](記事)と$deleteCommentが同じ場合に配列$arrayから$deleteCommentを削除する
+            //if(strpos($array[1],$deleteComment)){
+            //  array_splice($array,$deleteComment);
+            // }
 
             //そのページでのコメントのみを表示するためにそのページのURL($url)の中に$array[0](URLから取り出した13文字)という文字列が含まれていた場合にコメント欄を繰り返し処理で作っていく
-           if(strpos($url,$array[0])){ ?>
+            if(strpos($url,$array[1])){ ?>
+           
          
              <form method="POST">
                <div class="pushedCommentArea">
-                 <textarea class="pushedCommentInput" name="pushedComment" cols="26" rows="9" readonly><?php echo $array[1]; ?></textarea>
+                 <textarea class="pushedCommentInput" name="" cols="26" rows="9" readonly><?php echo $array[2]; ?></textarea>
+                 <input type="hidden" name='del' value="<?php echo h($array[0]); ?>">
                  <input class="commentDeleteBotton" type="submit" value="コメントを消す">
                </div>
              </form>
